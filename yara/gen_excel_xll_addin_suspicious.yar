@@ -24,6 +24,9 @@ rule gen_Excel_xll_addin_suspicious
     strings:
         $s1 = "CryptStringToBinaryA"
         $s2 = "NtQueueApcThread"
+        
+        $cs1 = "dsrole.dll"
+        $cs2 = "user32.dll"
 
         $debug = "SeDebugPrivilege"
     condition:
@@ -49,6 +52,9 @@ rule gen_Excel_xll_addin_suspicious
                   and pe.imports("KERNEL32.dll", "VirtualAllocEx")
                   and pe.imports("KERNEL32.dll", "ResumeThread")
                   and pe.imports("KERNEL32.dll", "SetThreadContext"))
-            or all of ($s*)
+             or (all of ($s*))
+             or (all of ($cs*) and pe.imports("KERNEL32.dll", "VirtualAllocEx")
+                  and pe.imports("KERNEL32.dll", "TerminateProcess")
+                  and pe.imports("KERNEL32.dll", "Sleep"))
             )
 }
